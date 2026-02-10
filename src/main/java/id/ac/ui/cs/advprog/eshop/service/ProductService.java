@@ -9,4 +9,5 @@ public interface ProductService {
     public List<Product> findAllProducts();
     public Product findProductByItsId(UUID productId);
     public Product editProduct(Product editedProduct);
+    public boolean deleteProductByItsId(UUID productId);
 }

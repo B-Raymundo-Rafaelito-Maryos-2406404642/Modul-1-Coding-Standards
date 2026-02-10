@@ -50,4 +50,18 @@ public class ProductRepository {
         }
         return null;
     }
+
+    public boolean deleteProductByItsId(UUID productId) {
+        if (productId == null)
+            return false;
+        Iterator<Product> productIterator = productData.iterator();
+        while (productIterator.hasNext()) {
+            Product product = productIterator.next();
+            if (product.getProductId().equals(productId)) {
+                productIterator.remove();
+                return true;
+            }
+        }
+        return false;
+    }
 }
