@@ -70,4 +70,77 @@ class ProductRepositoryTest {
 
         assertFalse(productIterator.hasNext());
     }
+
+    @Test
+    void testFindByIdAndFindByName() {
+        Product product = new Product();
+        UUID id = UUID.randomUUID();
+        product.setProductId(id);
+        product.setProductName("Sauce X");
+        product.setProductQuantity(7);
+        productRepository.createProduct(product);
+
+        Product byId = productRepository.findProductByItsId(id);
+        assertNotNull(byId);
+        assertEquals(product.getProductName(), byId.getProductName());
+
+        Product byName = productRepository.findProductByItsName("Sauce X");
+        assertNotNull(byName);
+        assertEquals(id, byName.getProductId());
+
+        // negative: name not present
+        assertNull(productRepository.findProductByItsName("NonExistingName"));
+    }
+
+    @Test
+    void testEditProduct_success_and_failures() {
+        Product original = new Product();
+        UUID id = UUID.randomUUID();
+        original.setProductId(id);
+        original.setProductName("Original");
+        original.setProductQuantity(2);
+        productRepository.createProduct(original);
+
+        Product edited = new Product();
+        edited.setProductId(id);
+        edited.setProductName("Edited");
+        edited.setProductQuantity(20);
+
+        Product result = productRepository.editProduct(edited);
+        assertNotNull(result);
+        assertEquals("Edited", result.getProductName());
+        assertEquals(20, result.getProductQuantity());
+
+        // negative: editing non-existing id
+        Product unknown = new Product();
+        unknown.setProductId(UUID.randomUUID());
+        unknown.setProductName("X");
+        unknown.setProductQuantity(1);
+        assertNull(productRepository.editProduct(unknown));
+
+        // negative: editedProduct null or id null
+        assertNull(productRepository.editProduct(null));
+        Product noId = new Product();
+        noId.setProductName("NoId");
+        noId.setProductQuantity(1);
+        assertNull(productRepository.editProduct(noId));
+    }
+
+    @Test
+    void testDeleteProductByItsId_positive_negative_and_null() {
+        Product p = new Product();
+        UUID id = UUID.randomUUID();
+        p.setProductId(id);
+        p.setProductName("ToDelete");
+        p.setProductQuantity(5);
+        productRepository.createProduct(p);
+
+        // positive
+        assertTrue(productRepository.deleteProductByItsId(id));
+        // now it's gone
+        assertFalse(productRepository.deleteProductByItsId(id));
+
+        // negative: null id
+        assertFalse(productRepository.deleteProductByItsId(null));
+    }
 }
