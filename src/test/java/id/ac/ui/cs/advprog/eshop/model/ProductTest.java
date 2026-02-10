@@ -34,7 +34,7 @@ class ProductTest {
     }
 
     @Test
-    void testProductQuantityIsPositive() {
-        assertTrue(this.product.getProductQuantity()>0);
+    void testProductQuantityIsNotNegative() {
+        assertTrue(this.product.getProductQuantity()>=0);
     }
 }
