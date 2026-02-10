@@ -20,7 +20,7 @@ class ProductTest {
 
     @Test
     void testGetProductId() {
-        assertEquals("eb5589f-1c39-46e0-8860-71af6af63bd6", this.product.getProductId());
+        assertEquals(UUID.fromString("eb5589f-1c39-46e0-8860-71af6af63bd6"), this.product.getProductId());
     }
 
     @Test
@@ -31,5 +31,10 @@ class ProductTest {
     @Test
     void testGetProductQuantity() {
         assertEquals(100, this.product.getProductQuantity());
+    }
+
+    @Test
+    void testProductQuantityIsPositive() {
+        assertTrue(this.product.getProductQuantity()>0);
     }
 }
