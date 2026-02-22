@@ -23,6 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(MockitoExtension.class)
 class ProductControllerTest {
+    private final static String PRODUCT_LIST_URL = "/product/list";
 
 	private MockMvc mockMvc;
 
@@ -61,7 +62,7 @@ class ProductControllerTest {
 		Product p = new Product(); p.setProductId(UUID.randomUUID());
 		when(service.findAllProducts()).thenReturn(Arrays.asList(p));
 
-		mockMvc.perform(get("/product/list"))
+		mockMvc.perform(get(PRODUCT_LIST_URL))
 				.andExpect(status().isOk())
 				.andExpect(view().name("ProductList"))
 				.andExpect(model().attribute("products", hasSize(1)));
@@ -88,7 +89,7 @@ class ProductControllerTest {
 
 		mockMvc.perform(get("/product/edit/{id}", id.toString()))
 				.andExpect(status().is3xxRedirection())
-				.andExpect(redirectedUrl("/product/list"));
+				.andExpect(redirectedUrl(PRODUCT_LIST_URL));
 	}
 
 	@Test
@@ -106,7 +107,7 @@ class ProductControllerTest {
 						.param("productName", "Updated")
 						.param("productQuantity", "99"))
 				.andExpect(status().is3xxRedirection())
-				.andExpect(redirectedUrl("/product/list"));
+				.andExpect(redirectedUrl(PRODUCT_LIST_URL));
 
 		verify(service).editProduct(any(Product.class));
 	}
@@ -117,7 +118,7 @@ class ProductControllerTest {
 
 		mockMvc.perform(post("/product/delete/{id}", id.toString()))
 				.andExpect(status().is3xxRedirection())
-				.andExpect(redirectedUrl("/product/list"));
+				.andExpect(redirectedUrl(PRODUCT_LIST_URL));
 
 		verify(service).deleteProductByItsId(id);
 	}
