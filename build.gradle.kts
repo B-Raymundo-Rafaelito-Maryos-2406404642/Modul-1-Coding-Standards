@@ -1,4 +1,5 @@
 plugins {
+	pmd
 	java
 	jacoco
 	id("org.springframework.boot") version "3.5.10"
@@ -18,6 +19,19 @@ java {
 configurations {
 	compileOnly {
 		extendsFrom(configurations.annotationProcessor.get())
+	}
+}
+
+pmd {
+	toolVersion = "7.0.0-rc4"
+	isConsoleOutput = true
+	rulesMinimumPriority = 5
+}
+
+tasks.withType<Pmd>().configureEach {
+	reports {
+		xml.required.set(false)
+		html.required.set(true)
 	}
 }
 
