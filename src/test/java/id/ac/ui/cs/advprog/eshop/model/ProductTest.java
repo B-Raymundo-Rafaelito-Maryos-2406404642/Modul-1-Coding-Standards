@@ -13,6 +13,7 @@ class ProductTest {
     @BeforeEach
     void setUp() {
         this.product = new Product();
+        this.product = new Product("Dummy", 10);
         this.product.setProductId(UUID.fromString("eb5589f-1c39-46e0-8860-71af6af63bd6"));
         this.product.setProductName("Sampo Cap Bambang");
         this.product.setProductQuantity(100);
