@@ -13,6 +13,7 @@ import java.util.UUID;
 @Controller
 @RequestMapping("/product")
 public class ProductController {
+    private final static String PRODUCT_LIST_URL = "/product/list";
 
     @Autowired
     private ProductService service;
@@ -41,7 +42,7 @@ public class ProductController {
     public String editProductPage(@PathVariable("id") UUID productId, Model model) {
         Product product = service.findProductByItsId(productId);
         if (product == null) {
-            return "redirect:/product/list";
+            return "redirect:" + PRODUCT_LIST_URL;
         }
         model.addAttribute("product", product);
         return "EditProduct";
@@ -50,12 +51,12 @@ public class ProductController {
     @PostMapping("/edit")
     public String editProductPost(@ModelAttribute Product product) {
         service.editProduct(product);
-        return "redirect:/product/list";
+        return "redirect:" + PRODUCT_LIST_URL;
     }
 
     @PostMapping("/delete/{id}")
     public String deleteProductPost(@PathVariable("id") UUID productId) {
         service.deleteProductByItsId(productId);
-        return "redirect:/product/list";
+        return "redirect:" + PRODUCT_LIST_URL;
     }
 }

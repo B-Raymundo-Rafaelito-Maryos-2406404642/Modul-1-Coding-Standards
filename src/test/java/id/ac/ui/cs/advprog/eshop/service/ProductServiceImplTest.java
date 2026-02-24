@@ -34,6 +34,7 @@ class ProductServiceImplTest {
 
 		when(repo.createProduct(any())).thenAnswer(inv -> inv.getArgument(0));
 
+		p.setProductId(null);
 		Product result = service.createProduct(p);
 
 		assertNotNull(result.getProductId(), "productId should be generated when null");

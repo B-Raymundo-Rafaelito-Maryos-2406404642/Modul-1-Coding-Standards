@@ -80,6 +80,15 @@ class ProductRepositoryTest {
         product.setProductQuantity(7);
         productRepository.createProduct(product);
 
+        Product productWithNullId = new Product();
+        productWithNullId.setProductId(null);
+        productWithNullId.setProductName("NullId Product");
+        productWithNullId.setProductQuantity(1);
+        productRepository.createProduct(productWithNullId);
+
+        Product notFound = productRepository.findProductByItsId(UUID.randomUUID());
+        assertNull(notFound);
+
         Product byId = productRepository.findProductByItsId(id);
         assertNotNull(byId);
         assertEquals(product.getProductName(), byId.getProductName());
@@ -121,6 +130,7 @@ class ProductRepositoryTest {
         // negative: editedProduct null or id null
         assertNull(productRepository.editProduct(null));
         Product noId = new Product();
+        noId.setProductId(null);
         noId.setProductName("NoId");
         noId.setProductQuantity(1);
         assertNull(productRepository.editProduct(noId));
@@ -128,6 +138,8 @@ class ProductRepositoryTest {
 
     @Test
     void testDeleteProductByItsId_positive_negative_and_null() {
+        Product product = new Product();
+        productRepository.createProduct(product);
         Product p = new Product();
         UUID id = UUID.randomUUID();
         p.setProductId(id);
@@ -143,4 +155,5 @@ class ProductRepositoryTest {
         // negative: null id
         assertFalse(productRepository.deleteProductByItsId(null));
     }
+
 }
