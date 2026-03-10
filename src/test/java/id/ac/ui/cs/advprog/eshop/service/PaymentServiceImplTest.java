@@ -296,4 +296,93 @@ class PaymentServiceImplTest {
         verify(paymentRepository, never()).save(any());
         verify(orderRepository, never()).save(any());
     }
+    
+
+    @Test
+    void setStatus_nullPayment_returnsNull() {
+        Payment result = service.setStatus(null, "SUCCESS");
+
+        assertNull(result);
+        verify(paymentRepository, never()).save(any());
+        verify(orderRepository, never()).save(any());
+    }
+
+    @Test
+    void setStatus_nullStatus_returnsNull() {
+        Payment payment = Payment.builder()
+                .id("pay-1")
+                .status("PENDING")
+                .build();
+
+        Payment result = service.setStatus(payment, null);
+
+        assertNull(result);
+        verify(paymentRepository, never()).save(any());
+    }
+
+    @Test
+    void setStatus_successStatus_updatesPaymentAndOrder() {
+        Order order = makeOrder();
+        Payment payment = new Payment("pay-1", "VOUCHER", "PENDING", null, order);
+
+        when(paymentRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        when(orderRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        Payment result = service.setStatus(payment, "SUCCESS");
+
+        assertNotNull(result);
+        assertEquals("SUCCESS", result.getStatus());
+        assertEquals("SUCCESS", order.getStatus());
+        verify(paymentRepository).save(payment);
+        verify(orderRepository).save(order);
+    }
+
+    @Test
+    void setStatus_rejectedStatus_updatesPaymentAndOrder() {
+        Order order = makeOrder();
+        Payment payment = new Payment("pay-2", "BANK_TRANSFER", "PENDING", null, order);
+
+        when(paymentRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        when(orderRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        Payment result = service.setStatus(payment, "REJECTED");
+
+        assertNotNull(result);
+        assertEquals("REJECTED", result.getStatus());
+        assertEquals("FAILED", order.getStatus());
+        verify(paymentRepository).save(payment);
+        verify(orderRepository).save(order);
+    }
+
+    @Test
+    void setStatus_paymentWithNullOrder_updatesPaymentOnly() {
+        Payment payment = new Payment("pay-3", "VOUCHER", "PENDING", null, null);
+
+        when(paymentRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        Payment result = service.setStatus(payment, "SUCCESS");
+
+        assertNotNull(result);
+        assertEquals("SUCCESS", result.getStatus());
+        verify(paymentRepository).save(payment);
+        verify(orderRepository, never()).save(any());
+    }
+
+    @Test
+    void setStatus_otherStatus_updatesPaymentButNotOrder() {
+        Order order = makeOrder();
+        Payment payment = new Payment("pay-4", "VOUCHER", "PENDING", null, order);
+
+        when(paymentRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        Payment result = service.setStatus(payment, "CANCELLED");
+
+        assertNotNull(result);
+        assertEquals("CANCELLED", result.getStatus());
+        // Status should remain as original for non-SUCCESS/REJECTED
+        assertNotEquals("SUCCESS", order.getStatus());
+        assertNotEquals("FAILED", order.getStatus());
+        verify(paymentRepository).save(payment);
+        verify(orderRepository, never()).save(any());
+    }
 }
