@@ -81,3 +81,28 @@ SOLID principles I applied to my project; it's advandatages and disadvatage(s) i
     - In CarController class, I changed the dependency from CarServiceImpl to CarService to CarServiceGET and CarServicePOST, so that the high-level module (CarController) does not depend on the low-level module (CarServiceImpl), but both depend on the abstraction (CarServiceGET and CarServicePOST)
     - Advantages if applied: If I want to change the implementation of CarRepository (e.g., using a different database), I can simply create a new class that implements CarRepositoryInterface and update the dependency injection in CarServiceImpl without modifying the existing code. Similarly, if I want to change the implementation of CarServiceImpl, I can create a new class that implements CarServiceGET and CarServicePOST and update the dependency injection in CarController without modifying the existing code. This leads to a more flexible and maintainable codebase, as changes to low-level modules do not affect high-level modules.
     - Diadvantages if not applied: If I had not followed DSP and instead had CarServiceImpl directly depend on CarRepository, any change to the CarRepository implementation would require changes to CarServiceImpl, which could lead to bugs and make the code harder to maintain. Similarly, if CarController directly depended on CarServiceImpl, any change to CarServiceImpl would require changes to CarController, which could also lead to bugs and maintenance issues.
+
+# Module 4
+1. Reflection based on Percival (2017) proposed self-reflective questions (in "Principles and Best Practice of Testing" submodule, chapter "Evaluating Your Testing Objectives"), whether this TDD flow is useful enough for me or not. If not, I will explain things that I need to do next time I make more tests.
+
+    Answer:
+
+    Conclusion: Yes — the TDD flow is useful for this project. The existing unit and service tests (e.g., OrderTest, OrderServiceImplTest, OrderRepositoryTest) provide fast feedback, help catch regressions, and make refactoring safer.
+    
+    Why: Tests use deterministic inputs (fixed UUIDs and timestamps) and in-memory data, so they run quickly and consistently, which is the core TDD benefit.
+    
+    Improvements: I already write tests before implementing features (red → green → refactor); continue that practice, and focus on refactoring and test granularity. Use test data builders or factory methods to reduce setup duplication, move slower functional tests to a separate pipeline stage, and add more edge-case and negative tests (e.g., nulls, concurrent updates) to widen coverage.
+
+2. Reflection whether my tests have successfully followed F.I.R.S.T. principle or not. If not, I will explain things that I need to do the next time I create more tests.
+
+    Answer:
+
+    Fast: Mostly yes — unit/service/repository tests are in-memory and fast; functional tests are slower and should be separated.
+    
+    Independent: Mostly yes — each test uses fresh objects in @BeforeEach, but avoid sharing mutable state across tests and prefer immutable test fixtures or builders.
+    
+    Repeatable: Yes — tests use fixed UUIDs and timestamps so outcomes are deterministic.
+    
+    Self-Validating: Yes — tests use explicit assertions (e.g., assertEquals, assertThrows), so they clearly indicate pass/fail.
+    
+    Timely: Yes — for this module, all of the tests were authored before the corresponding implementation, so they follow TDD timing and provide timely feedback.
