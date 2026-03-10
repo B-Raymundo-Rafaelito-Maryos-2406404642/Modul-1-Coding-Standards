@@ -385,4 +385,44 @@ class PaymentServiceImplTest {
         verify(paymentRepository).save(payment);
         verify(orderRepository, never()).save(any());
     }
+
+    @Test
+    void getPayment_nullPaymentId_returnsNull() {
+        Payment result = service.getPayment(null);
+
+        assertNull(result);
+        verify(paymentRepository, never()).findById(any());
+    }
+
+    @Test
+    void getPayment_validId_returnsPayment() {
+        Payment payment = Payment.builder()
+                .id("pay-5")
+                .method("VOUCHER")
+                .status("SUCCESS")
+                .build();
+
+        when(paymentRepository.findById("pay-5")).thenReturn(payment);
+
+        Payment result = service.getPayment("pay-5");
+
+        assertNotNull(result);
+        assertEquals("pay-5", result.getId());
+        verify(paymentRepository).findById("pay-5");
+    }
+
+    @Test
+    void getPayment_and_getAllPayments_delegatesToRepository() {
+        Payment p1 = new Payment("p1", "VOUCHER", "SUCCESS", null, makeOrder());
+        Payment p2 = new Payment("p2", "BANK_TRANSFER", "REJECTED", null, makeOrder());
+
+        when(paymentRepository.findById("p1")).thenReturn(p1);
+        when(paymentRepository.findAll()).thenReturn(Arrays.asList(p1, p2));
+
+        assertSame(p1, service.getPayment("p1"));
+        List<Payment> all = service.getAllPayments();
+        assertEquals(2, all.size());
+        assertTrue(all.contains(p1));
+        assertTrue(all.contains(p2));
+    }
 }
