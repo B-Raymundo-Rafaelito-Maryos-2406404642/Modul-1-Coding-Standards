@@ -78,10 +78,24 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public Payment getPayment(String paymentId) {return null;}
+    public Payment getPayment(String paymentId) {
+        if (paymentId == null) return null;
+        return paymentRepository.findById(paymentId);
+    }
 
     @Override
-    public List<Payment> getAllPayments() {return null;}
+    public List<Payment> getAllPayments() {
+        return paymentRepository.findAll();
+    }
 
-    private boolean isValidVoucher(String code) {return false;}
+    private boolean isValidVoucher(String code) {
+        if (code == null) return false;
+        if (code.length() != 16) return false;
+        if (!code.startsWith("ESHOP")) return false;
+        int digits = 0;
+        for (char c : code.toCharArray()) {
+            if (Character.isDigit(c)) digits++;
+        }
+        return digits == 8;
+    }
 }
