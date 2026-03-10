@@ -113,4 +113,56 @@ class PaymentRepositoryTest {
         List<Payment> all = repository.findAll();
         assertEquals(2, all.size());
     }
+
+    @Test
+    void findById_existingId_returnsPayment() {
+        Payment payment = Payment.builder()
+                .id("pay-3")
+                .method("VOUCHER")
+                .status("SUCCESS")
+                .build();
+        repository.save(payment);
+
+        Payment found = repository.findById("pay-3");
+
+        assertNotNull(found);
+        assertEquals("pay-3", found.getId());
+    }
+
+    @Test
+    void findById_nonExistingId_returnsNull() {
+        Payment found = repository.findById("non-existing-id");
+
+        assertNull(found);
+    }
+
+    @Test
+    void findById_nullId_returnsNull() {
+        Payment found = repository.findById(null);
+
+        assertNull(found);
+    }
+
+    @Test
+    void findById_withNullIdInRepository_returnsNull() throws Exception {
+        // Create a payment with null id
+        Payment paymentWithNullId = Payment.builder()
+                .id(null)
+                .method("VOUCHER")
+                .status("SUCCESS")
+                .build();
+        
+        // Use reflection to add to the internal list
+        Field field = PaymentRepository.class.getDeclaredField("paymentData");
+        field.setAccessible(true);
+        @SuppressWarnings("unchecked")
+        List<Payment> paymentData = (List<Payment>) field.get(repository);
+        paymentData.add(paymentWithNullId);
+
+        // Try to find it
+        Payment found = repository.findById(null);
+        
+        // Should return null since null id cannot be matched
+        assertNull(found);
+    }
 }
