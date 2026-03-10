@@ -91,18 +91,6 @@ class PaymentTest {
     }
 
     @Test
-    void setStatus_canChangeFromRejectedToSuccess() {
-        Payment payment = Payment.builder()
-                .id("pay-5")
-                .status("REJECTED")
-                .build();
-
-        payment.setStatus("SUCCESS");
-
-        assertEquals("SUCCESS", payment.getStatus());
-    }
-
-    @Test
     void setStatus_canChangeToFailed() {
         Payment payment = Payment.builder()
                 .id("pay-6")
@@ -112,5 +100,17 @@ class PaymentTest {
         payment.setStatus("FAILED");
 
         assertEquals("FAILED", payment.getStatus());
+    }
+
+    @Test
+    void setStatus_canChangeFromRejectedToSuccess() {
+        Payment payment = Payment.builder()
+                .id("pay-5")
+                .status("REJECTED")
+                .build();
+
+        payment.setStatus("SUCCESS");
+
+        assertEquals("SUCCESS", payment.getStatus());
     }
 }
