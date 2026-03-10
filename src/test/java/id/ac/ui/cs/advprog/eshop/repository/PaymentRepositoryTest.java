@@ -165,4 +165,54 @@ class PaymentRepositoryTest {
         // Should return null since null id cannot be matched
         assertNull(found);
     }
+
+    @Test
+    void findAll_emptyRepository_returnsEmptyList() {
+        List<Payment> result = repository.findAll();
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findAll_withMultiplePayments_returnsAll() {
+        Payment payment1 = Payment.builder()
+                .id("pay-4")
+                .method("VOUCHER")
+                .status("SUCCESS")
+                .build();
+        Payment payment2 = Payment.builder()
+                .id("pay-5")
+                .method("BANK_TRANSFER")
+                .status("PENDING")
+                .build();
+        Payment payment3 = Payment.builder()
+                .id("pay-6")
+                .method("VOUCHER")
+                .status("REJECTED")
+                .build();
+
+        repository.save(payment1);
+        repository.save(payment2);
+        repository.save(payment3);
+
+        List<Payment> all = repository.findAll();
+
+        assertEquals(3, all.size());
+    }
+
+    @Test
+    void findAll_returnsCopyNotOriginalList() {
+        Payment payment = Payment.builder()
+                .id("pay-7")
+                .method("VOUCHER")
+                .status("SUCCESS")
+                .build();
+        repository.save(payment);
+
+        List<Payment> firstCall = repository.findAll();
+        List<Payment> secondCall = repository.findAll();
+
+        assertNotSame(firstCall, secondCall);
+        assertEquals(firstCall.size(), secondCall.size());
+    }
 }
