@@ -59,7 +59,23 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public Payment setStatus(Payment payment, String status) {return null;}
+    public Payment setStatus(Payment payment, String status) {
+        if (payment == null || status == null) return null;
+        payment.setStatus(status);
+        paymentRepository.save(payment);
+
+        Order order = payment.getOrder();
+        if (order != null) {
+            if ("SUCCESS".equals(status)) {
+                order.setStatus(OrderStatus.SUCCESS.getValue());
+                orderRepository.save(order);
+            } else if ("REJECTED".equals(status)) {
+                order.setStatus(OrderStatus.FAILED.getValue());
+                orderRepository.save(order);
+            }
+        }
+        return payment;
+    }
 
     @Override
     public Payment getPayment(String paymentId) {return null;}
